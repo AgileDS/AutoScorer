@@ -1,0 +1,5 @@
+[run]
+include = brainy_rats_app/*
+omit = *migrations*, *tests*
+plugins =
+    django_coverage_plugin
