@@ -1,2 +1,2 @@
-server/brainy_rats_app/.envs/*
+server/brainy_rats_app/.envs/.local/*
 .vscode/*
