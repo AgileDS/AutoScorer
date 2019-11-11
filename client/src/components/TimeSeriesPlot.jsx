@@ -2,7 +2,7 @@ import React from 'react';
 import { format } from "d3-format";
 // Imports from the charts library
 
-import {ChartContainer, ChartRow, Charts, YAxis, AreaChart, Legend, MultiBrush, Resizable, styler} from "react-timeseries-charts";
+import {ChartContainer, ChartRow, Charts, YAxis, LineChart, Legend, MultiBrush, Resizable, styler} from "react-timeseries-charts";
 const upDownStyle = styler([
     { key: "in", color: "#C8D5B8" }, 
     { key: "out", color: "#9BB8D7" }
@@ -23,13 +23,14 @@ class TimeSeriesPlot extends React.Component {
           marginLeft: "5px"
         }
   
-        const max = 57624306886.4000
+        const max = Math.max(Math.abs(this.props.data.collection().max('in')), Math.abs(this.props.data.collection().min('in')))
         const axistype = "linear";
         const tracker = this.props.tracker ? `${this.props.tracker}` : "";
         const formatter = format(".4s");
   
         return (
             <div>
+                {/*
                 <div className="row">
                     <div className="col-md-4">
                         <Legend
@@ -43,9 +44,9 @@ class TimeSeriesPlot extends React.Component {
                     </div>
                     <div className="col-md-8">
                         <span style={dateStyle}>{tracker}</span>
-                    </div>
+                        </div>
                 </div>
-  
+                */}
                 <hr />
   
                 <div className="row">
@@ -54,9 +55,6 @@ class TimeSeriesPlot extends React.Component {
                             <div style={{position: 'relative'}}>
                                 <div style={{position: 'absolute', left: this.props.trackerX}}>
                                     <div style={markerStyle}>Data In: {formatter(this.props.trackerEventIn.get('in'))}</div>
-                                </div>
-                                <div style={{position: 'absolute', left: this.props.trackerX, top: '220px' }}>
-                                    <div style={markerStyle}>Data In: {formatter(this.props.trackerEventOut.get('out'))}</div>
                                 </div>
                             </div>
                         : null }
@@ -74,13 +72,10 @@ class TimeSeriesPlot extends React.Component {
                             >
                                 <ChartRow height="250" debug={false}>
                                     <Charts>
-                                        <AreaChart
+                                        <LineChart
                                             axis="traffic"
                                             series={this.props.data}
-                                            columns={{
-                                                up: ["in"],
-                                                down: ["out"]
-                                            }}
+                                            columns={["in"]}
                                             style={upDownStyle}
                                         />
                                         <MultiBrush
