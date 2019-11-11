@@ -6,6 +6,7 @@ import {
   Route
 } from "react-router-dom";
 import Login from './login/Login'
+import Register from './register/Register'
 import Dashboard from './dashboard/Dashboard'
 
 function App() {
@@ -19,6 +20,9 @@ function App() {
           </Route>
           <Route path="/dashboard">
             <Dashboard />
+          </Route>
+          <Route path="/register">
+              <Register />
           </Route>
         </Switch>
       </div>
