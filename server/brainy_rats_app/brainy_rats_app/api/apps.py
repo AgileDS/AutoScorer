@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class ApiConfig(AppConfig):
-    name = 'api'
+    name = 'brainy_rats_app.api'
     verbose_name = _('api')
 
     def ready(self):
