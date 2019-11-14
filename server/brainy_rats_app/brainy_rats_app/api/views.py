@@ -1,8 +1,15 @@
-from django.views.generic import TemplateView
-
+from brainy_rats_app.api.models import Dataset
+from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.mixins import (
+    CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+)
+from rest_framework.viewsets import GenericViewSet
+
+
+from brainy_rats_app.api.serializers import DatasetSerializer
 
 class TokenPermission(IsAuthenticated):
     '''
@@ -22,6 +29,7 @@ class HelloView(APIView):
         content = {'message': 'Hello, World!'}
         return Response(content)
 
+class DatasetViewSet(CreateAPIView): 
+    permission_classes = (IsAuthenticated,)
 
-class MainView(TemplateView):
-    template_name = 'index.html'
+    serializer_class = DatasetSerializer
