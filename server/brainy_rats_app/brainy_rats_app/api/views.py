@@ -29,7 +29,8 @@ class HelloView(APIView):
         content = {'message': 'Hello, World!'}
         return Response(content)
 
-class DatasetViewSet(CreateAPIView): 
+
+class DatasetViewSet(CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     serializer_class = DatasetSerializer

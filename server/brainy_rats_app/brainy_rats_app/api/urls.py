@@ -8,4 +8,3 @@ urlpatterns = [
     path('hello/', HelloView.as_view(), name='hello'),
     path('dataset/', DatasetViewSet.as_view(), name='dataset'),
 ]
-
