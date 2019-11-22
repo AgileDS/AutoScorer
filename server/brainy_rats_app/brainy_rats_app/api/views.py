@@ -1,5 +1,6 @@
 from brainy_rats_app.api.models import Dataset
 from rest_framework.generics import CreateAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -29,7 +30,15 @@ class HelloView(APIView):
         content = {'message': 'Hello, World!'}
         return Response(content)
 
-class DatasetViewSet(CreateAPIView): 
-    permission_classes = (IsAuthenticated,)
-
+class DatasetCreateView(CreateAPIView): 
+    #permission_classes = (IsAuthenticated,)
     serializer_class = DatasetSerializer
+
+class DatasetListView(ListAPIView): 
+    permission_classes = (IsAuthenticated,)
+    serializer_class = DatasetSerializer
+
+    def get_queryset(self):
+        return Dataset.objects.all()
+        # user = self.request.user
+        # return Dataset.objects.filter(owner=user)
