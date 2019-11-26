@@ -21,7 +21,7 @@ class DatasetViewSet(CreateAPIView):
 
 
 class CreateUserAPIView(CreateAPIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
 
     def post(self, request, *args, **kwargs):
