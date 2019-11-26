@@ -1,7 +1,8 @@
-import {Link, withRouter} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import {registerReq} from "../api";
 
 
 class Register extends React.Component {
@@ -19,9 +20,21 @@ class Register extends React.Component {
     };
 
     handleSubmit = (event) => {
-        // alert('A name was submitted: ' + this.state.username);
         event.preventDefault();
-        this.props.history.push('/');
+        console.log('A name was submitted: ' + this.state.username);
+        let payload = {
+            "username": this.state.username,
+            "password": this.state.password,
+            "confirm_password": this.state.confirm_password
+        }
+        registerReq(payload).then(response => {
+            console.log("RegisterPage", response)
+            if (response === false) {
+                this.setState({update_string: "There was error with your registration"});
+            } else {
+                this.props.history.push('/dashboard');
+            }
+        });
     };
 
     render(){
@@ -29,9 +42,9 @@ class Register extends React.Component {
             <div align="center">
                 <p className='h1'>Hello to your favourite AutoScorer!</p>
                 <b> Demo Register </b>
-                <Form onSubmit={this.handleSubmit} className="mt-3"  align='left' style={{'max-width': 20+'em'}}>
+                <Form onSubmit={this.handleSubmit} className="mt-3"  align='left' style={{'maxWidth': 20+'em'}}>
                     <br/>
-                    <Form.Group controlId="formBasicEmail">
+                    <Form.Group controlId="formBasicUsername">
                         <Form.Label>Enter your username</Form.Label>
                         <Form.Control name='username' type="text"
                                     value={this.state.username}  onChange={this.handleChange}/>

@@ -2,6 +2,8 @@ import React from 'react';
 import {Link, withRouter} from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import {loginReq} from "../api";
+
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -14,16 +16,30 @@ class Login extends React.Component {
                 this.setState({update_string: "Welcome back " + event.target.value});
                 break;
             case "password":
-                this.setState({update_string:   "HAHA I know your password " + this.state.username
-                                                + "!! its " + event.target.value})
+                // this.setState({update_string:   "HAHA I know your password " + this.state.username
+                //                                 + "!! its " + event.target.value})
+                break;
+            default:
+                break;
         }
         this.setState({[event.target.name]: event.target.value});
     };
 
     handleSubmit = (event) => {
-        // alert('A name was submitted: ' + this.state.username);
         event.preventDefault();
-        this.props.history.push('/dashboard');
+        console.log('A name was submitted: ' + this.state.username);
+        let payload = {
+            "username": this.state.username,
+            "password": this.state.password
+        }
+        loginReq(payload).then(response => {
+            console.log("LoginPage", response)
+            if (response === false) {
+                this.setState({update_string: "There was error with your login"});
+            } else {
+                this.props.history.push('/dashboard');
+            }
+        });
     };
 
     render(){
@@ -31,8 +47,8 @@ class Login extends React.Component {
             <div align="center">
                 <h1>Hello to your favourite AutoScorer!</h1>
                 <b> Demo Login </b>
-                <Form onSubmit={this.handleSubmit} align='left' className="mt-5"  style={{'max-width': 20+'em'}}>
-                    <Form.Group controlId="formBasicEmail">
+                <Form onSubmit={this.handleSubmit} align='left' className="mt-5"  style={{'maxWidth': 20+'em'}}>
+                    <Form.Group controlId="formBasicUsername">
                         <Form.Label>Enter your username</Form.Label>
                         <Form.Control md="auto" name='username' type="text" value={this.state.username}  onChange={this.handleChange}/>
                     </Form.Group>
@@ -46,7 +62,7 @@ class Login extends React.Component {
                     <br/>
                     <Link to='/register'>Don't have an account? Sign Up</Link>
                 </Form>
-                {/*<p>AutoScorer feedback: {this.state.update_string}</p>*/}
+                <p>AutoScorer feedback: {this.state.update_string}</p>
                 <br/>
                 {/*<Link to="/dashboard">Dashboard</Link>*/}
             </div>
