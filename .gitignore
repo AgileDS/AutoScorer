@@ -1,3 +1,4 @@
 server/brainy_rats_app/.envs/.local/*
 .vscode/*
+.idea/*
 *-workspace

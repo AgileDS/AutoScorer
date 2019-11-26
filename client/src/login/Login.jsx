@@ -1,5 +1,7 @@
 import React from 'react';
 import {Link, withRouter} from "react-router-dom";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -27,19 +29,24 @@ class Login extends React.Component {
     render(){
         return (
             <div align="center">
-                <form onSubmit={this.handleSubmit}>
-                    <h1>Hello to your favourite AutoScorer!</h1>
-                    <b> Demo Login </b>
-                    <p>Enter your username</p>
-                    <input name='username' type="text" value={this.state.username}  onChange={this.handleChange}/>
-                    <p>Password</p>
-                    <input name='password' type="password" value={this.state.password}  onChange={this.handleChange}/>
-                    <br/>
-                    <input type="submit" value="Log in" />
+                <h1>Hello to your favourite AutoScorer!</h1>
+                <b> Demo Login </b>
+                <Form onSubmit={this.handleSubmit} align='left' className="mt-5"  style={{'max-width': 20+'em'}}>
+                    <Form.Group controlId="formBasicEmail">
+                        <Form.Label>Enter your username</Form.Label>
+                        <Form.Control md="auto" name='username' type="text" value={this.state.username}  onChange={this.handleChange}/>
+                    </Form.Group>
+                    <Form.Group controlId="formBasicPassword">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control md="auto" name='password' type="password" value={this.state.password}  onChange={this.handleChange}/>
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                        Log in
+                    </Button>
                     <br/>
                     <Link to='/register'>Don't have an account? Sign Up</Link>
-                </form>
-                <p>AutoScorer feedback: {this.state.update_string}</p>
+                </Form>
+                {/*<p>AutoScorer feedback: {this.state.update_string}</p>*/}
                 <br/>
                 {/*<Link to="/dashboard">Dashboard</Link>*/}
             </div>
