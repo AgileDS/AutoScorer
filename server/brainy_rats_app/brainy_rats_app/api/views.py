@@ -1,25 +1,10 @@
-from brainy_rats_app.api.models import Dataset
 from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.mixins import (
-    CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin
-)
-from rest_framework.viewsets import GenericViewSet
+from django.contrib.auth import password_validation
 
-
-from brainy_rats_app.api.serializers import DatasetSerializer
-
-class TokenPermission(IsAuthenticated):
-    '''
-    Class to check if the tocken is valid.
-    '''
-
-    def has_permission(self, request, view):
-        user = request.user
-        token = ''
-        pass
+from brainy_rats_app.api.serializers import DatasetSerializer, UserSerializer
 
 
 class HelloView(APIView):
@@ -32,5 +17,13 @@ class HelloView(APIView):
 
 class DatasetViewSet(CreateAPIView):
     permission_classes = (IsAuthenticated,)
-
     serializer_class = DatasetSerializer
+
+
+class CreateUserAPIView(CreateAPIView):
+    # permission_classes = (IsAuthenticated,)
+    serializer_class = UserSerializer
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return response
