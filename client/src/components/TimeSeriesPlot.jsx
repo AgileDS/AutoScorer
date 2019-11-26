@@ -23,7 +23,6 @@ class TimeSeriesPlot extends React.Component {
           marginLeft: "5px"
         }
   
-        const max = Math.max(Math.abs(this.props.data.collection().max('in')), Math.abs(this.props.data.collection().min('in')))
         const axistype = "linear";
         const tracker = this.props.tracker ? `${this.props.tracker}` : "";
         const formatter = format(".4s");
@@ -64,8 +63,8 @@ class TimeSeriesPlot extends React.Component {
                                 trackerPosition={this.props.tracker}
                                 onTrackerChanged={this.props.handleTrackerChanged}
                                 enablePanZoom={false}
-                                maxTime={this.props.data.range().end()}
-                                minTime={this.props.data.range().begin()}
+                                maxTime={this.props.timerange.end()}
+                                minTime={this.props.timerange.begin()}
                                 minDuration={1000 * 60 * 60}
                                 onBackgroundClick={this.props.onBackgroundClick}
                                 onTimeRangeChanged={this.props.handleTimeRangeChange}
@@ -96,8 +95,8 @@ class TimeSeriesPlot extends React.Component {
                                         id="traffic"
                                         label="Traffic (bps)"
                                         labelOffset={0}
-                                        min={-max}
-                                        max={max}
+                                        min={-this.props.maxSignal}
+                                        max={this.props.maxSignal}
                                         absolute={true}
                                         width="60"
                                         type={axistype}

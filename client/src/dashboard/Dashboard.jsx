@@ -10,7 +10,9 @@ const sample = require("../data/sample.json");
 const beginTime = sample['begin_time']
 const endTime = sample['end_time']
 const timeDelta = (endTime-beginTime)/Object.keys(sample['EEG']).length
-const initialPeriod = 20000  
+const initialPeriod = 10000
+const visibleNumPeriods = 6
+const selectedAt = 3
 const EEG = new TimeSeries({
     name: `EEG`,
     columns: ["time", "in"],
@@ -25,8 +27,8 @@ const EMG = new TimeSeries({
 /**
  * UTILS
  */
-const mod = (a,n)=>((a%n)+n)%n
-const breakTimeSeries = (t0, t1, period)=>{
+
+const breakTimeRange = (t0, t1, period)=>{
     let numCuts = Math.floor((t1-t0)/period)
     return Array.apply(null,Array(numCuts+1)).map((n,i)=>{            
         let initTime = parseInt((t0+i*period) * 1000)
@@ -37,15 +39,32 @@ const breakTimeSeries = (t0, t1, period)=>{
         return new TimeRange(initTime,finalTime)
     })
 }
+
+const cutTimeSeries = (data, offsetData, length)=>{
+    return data.slice(offsetData,parseInt(offsetData+length))
+}
+const getAmplitude = (data)=>{
+    return Math.max(Math.abs(data.collection().max('in')), Math.abs(data.collection().min('in')))
+}
+
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
-              
-        let initialSelections = breakTimeSeries(beginTime, endTime, initialPeriod)
+        let initialSelections = breakTimeRange(beginTime, endTime, initialPeriod)
+        let numCuts =(endTime-beginTime)/initialPeriod
+        let dataPerPeriod = parseInt(EEG.size() / numCuts)
+        console.log(dataPerPeriod)
+        let initEEG = cutTimeSeries(EEG,0,dataPerPeriod*visibleNumPeriods)//slice(1441051972000,1441138285686)
+        let initEMG = cutTimeSeries(EMG,0,dataPerPeriod*visibleNumPeriods)
+        //console.log(initEEG)
+        //const max = Math.max(Math.abs(this.props.data.collection().max('in')), Math.abs(this.props.data.collection().min('in')))
+        //let initEMG = EMG.slice(beginTime*1000,endTime*1000)
         this.state = {
-            period: initialPeriod,
+            EEG: initEEG,//.slice(beginTime, beginTime+(initialPeriod*1000)*3.5)
+            EMG: initEMG,
+            offsetData: 0,
             tracker: null,
-            timerange: EEG.range(),
+            timerange: initEEG.range(),
             selected: 0,
             selections:initialSelections,
             trackerEventIn_EEG: null,
@@ -81,21 +100,45 @@ class Dashboard extends React.Component {
     onTimeRangeClicked = (i)=>{
         this.setState({ selected: i })
     }
-    _handleKeyDown = (event) => {
-        
-        //https://keycode.info/
+    _handleKeyDown = (event) => {     
+        let numCuts =(endTime-beginTime)/initialPeriod
+        let dataPerPeriod = parseInt(EEG.size() / numCuts)
+        let selected = this.state.selected
+        let offset = this.state.offsetData
+        //https://keycode.info/        
         switch(event.key){
-            case 'Enter':
-                this.setState((state)=>({selected:mod((state.selected+1),state.selections.length)}))
+            case 'ArrowRight':
+                if (selected<numCuts-1){
+                    selected+=1
+                    if( selected > selectedAt-1 & offset < numCuts-(visibleNumPeriods)){
+                        offset+=1
+                    }                   
+                }
+                
                 break;
-            case 'Backspace':
-                this.setState((state)=>{
-                    return {selected:mod(state.selected-1,state.selections.length)}
-                })
+            case 'ArrowLeft':
+                if (selected>0){
+                    selected-=1
+                    console.log(offset)
+                    if (offset>0 & selected < numCuts-selectedAt){
+                        offset-=1
+                    }
+                }
                 break;
             default:
                 break
         }
+        let newEEG = cutTimeSeries(EEG,offset*dataPerPeriod,dataPerPeriod*visibleNumPeriods)
+        let newEMG = cutTimeSeries(EMG,offset*dataPerPeriod,dataPerPeriod*visibleNumPeriods)
+        this.setState(()=>{
+            return {
+                selected:selected, 
+                offsetData:offset,
+                timerange: newEEG.range(),
+                EEG:newEEG,
+                EMG:newEMG
+            }
+        })
     }
     componentDidMount(){
         document.addEventListener("keydown", this._handleKeyDown);
@@ -104,10 +147,11 @@ class Dashboard extends React.Component {
         document.removeEventListener("keydown", this._handleKeyDown);
     }
     render(){
+        console.log(this.state.EEG)
         return (
             <div>
                 <TimeSeriesPlot 
-                    data={EEG}
+                    data={this.state.EEG}
                     tracker={this.state.tracker} 
                     timerange={this.state.timerange} 
                     selected={this.state.selected} 
@@ -120,9 +164,10 @@ class Dashboard extends React.Component {
                     handleSelectionChange={this.handleSelectionChange}
                     onBackgroundClick={this.onBackgroundClick}
                     onTimeRangeClicked={this.onTimeRangeClicked}
+                    maxSignal={getAmplitude(EEG)}
                 />
                 <TimeSeriesPlot 
-                    data={EMG}
+                    data={this.state.EMG}
                     tracker={this.state.tracker} 
                     timerange={this.state.timerange} 
                     selected={this.state.selected} 
@@ -135,6 +180,7 @@ class Dashboard extends React.Component {
                     handleSelectionChange={this.handleSelectionChange}
                     onBackgroundClick={this.onBackgroundClick}
                     onTimeRangeClicked={this.onTimeRangeClicked}
+                    maxSignal={getAmplitude(EMG)}
                 />
             </div>
         )
