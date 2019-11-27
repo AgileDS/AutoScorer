@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-server/brainy_rats_app/.envs/*
-.vscode/*
-server/brainy_rats_app/gs_keys.json
-=======
 server/brainy_rats_app/.envs/.local/*
 .vscode/*
 *-workspace
->>>>>>> a6a67759323053cd99d0aaea20105b7979174e82
