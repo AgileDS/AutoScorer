@@ -276,4 +276,4 @@ brainy_rats_app/media/
 .env
 .envs/*
 !.envs/.local/
-gs_keys.json
+#gs_keys.json
