@@ -1,27 +1,54 @@
 import axios from 'axios';
 
-var server = 'http://localhost:8044';
+const storage = {
+    TOKEN: 'AutoScorer-Token'
+};
 
+var server = process.env.MY_API_URL || "http://localhost:8000";
+console.log("server url:", server, process.env.NODE_ENV, process.env.MY_API_URL);
+server = server + "/api"
 
-export async function loginReq (loginForm){
-    console.log("lolw",loginForm.username)
-    // localStorage.setItem("usernameA", loginForm.username);
-    let response = await axios.post(server+"/login", loginForm);
-    console.log("loginReq", response);
-
-    if(response.status === 200 && response.data.jwt && response.data.expireAt){
-        let jwt = response.data.jwt;
-        let expire_at = response.data.expireAt;
-
-        localStorage.setItem("access_token", jwt);
-        localStorage.setItem("expire_at", expire_at);
-        return true
-    }
-    return false
+const headers = {
+    // 'Content-Type': 'application/json',
+    // "Access-Control-Allow-Origin": "*",
+    // 'Access-Control-Allow-Credentials': 'true'
 }
 
-export async function registerReq (registerForm){
-    let response = await axios.post(server+"/register", registerForm);
-    console.log("registerReq", response)
-    return false
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+axios.defaults.xsrfCookieName = "csrftoken";
+
+
+export async function loginReq(loginForm) {
+    console.log("lolw", loginForm, server)
+    try {
+        let response = await axios.post(server + "/api-token-auth/", loginForm, { headers: headers})
+        if (response.status === 200 && response.data.token) {
+            console.log(response);
+            localStorage.setItem(storage.TOKEN, response.data.token);
+            return true;
+        }
+        console.log("Response not ok", response)
+        return false;
+    } catch (err) {
+        console.log("error", err);
+        return false;
+    }
+}
+
+export async function registerReq(registerForm) {
+    try {
+        let response = await axios.post(server + "/create-user/", registerForm, { headers: headers})
+        if (response.data.token) {
+            console.log("registerReq", response)
+            localStorage.setItem(storage.TOKEN, response.data.token);
+            return true;
+        } else if (response.data.Error) {
+            return response.data.Error;
+        }
+        console.log("Response not ok", response)
+        return false;
+    } catch (err) {
+        console.log("error", err);
+        return false;
+    }
 }
