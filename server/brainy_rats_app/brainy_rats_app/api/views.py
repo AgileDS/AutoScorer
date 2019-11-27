@@ -10,7 +10,7 @@ from rest_framework.mixins import (
 from rest_framework.viewsets import GenericViewSet
 
 
-from brainy_rats_app.api.serializers import DatasetSerializer
+from brainy_rats_app.api.serializers import DatasetSerializer, DatasetSerializerView
 
 class TokenPermission(IsAuthenticated):
     '''
@@ -31,14 +31,14 @@ class HelloView(APIView):
         return Response(content)
 
 class DatasetCreateView(CreateAPIView): 
-    #permission_classes = (IsAuthenticated,)
-    serializer_class = DatasetSerializer
-
-class DatasetListView(ListAPIView): 
     permission_classes = (IsAuthenticated,)
     serializer_class = DatasetSerializer
 
+class DatasetListView(ListAPIView): 
+    #permission_classes = (IsAuthenticated,)
+    serializer_class = DatasetSerializerView
+
     def get_queryset(self):
-        return Dataset.objects.all()
-        # user = self.request.user
-        # return Dataset.objects.filter(owner=user)
+        #return Dataset.objects.all()
+        user = self.request.user
+        return Dataset.objects.filter(owner=user)
