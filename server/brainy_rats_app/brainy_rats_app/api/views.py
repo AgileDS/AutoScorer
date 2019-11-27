@@ -8,8 +8,10 @@ from rest_framework.settings import api_settings
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
+from rest_framework.authtoken.models import Token
 
 from brainy_rats_app.api.serializers import DatasetSerializer, UserSerializer
+from brainy_rats_app.users.models import User
 
 
 class HelloView(APIView):
@@ -34,13 +36,18 @@ class CreateUserAPIView(GenericAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        username, password = (request.data['username'], request.data['password'])
         try:
-            password_validation.validate_password(request.data['password'], request.data['username'])
+            password_validation.validate_password(password, username)
         except ValidationError:
             return JsonResponse({'Error': 'Password not valid'})
         self.perform_create(serializer)
+        user = User.objects.get(username=username)
+        user.set_password(password)
+        user.save()
+        token = Token.objects.get(user=user)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response({'username': username, 'password': password, 'token': token.key}, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         serializer.save()
