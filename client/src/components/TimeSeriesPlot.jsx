@@ -2,7 +2,8 @@ import React from 'react';
 import { format } from "d3-format";
 // Imports from the charts library
 
-import {ChartContainer, ChartRow, Charts, YAxis, LineChart, Legend, MultiBrush, Resizable, styler} from "react-timeseries-charts";
+import {ChartContainer, ChartRow, Charts, YAxis, LineChart, Legend, Resizable, styler} from "react-timeseries-charts";
+import MultiBrush from './MultiBrush'
 const upDownStyle = styler([
     { key: "in", color: "#C8D5B8" }, 
     { key: "out", color: "#9BB8D7" }
@@ -85,6 +86,9 @@ class TimeSeriesPlot extends React.Component {
                                                 } else {
                                                     return { fill: "#cccccc" };
                                                 }
+                                            }}
+                                            text={i => {
+                                                return this.props.getText?this.props.getText(i):''
                                             }}
                                             allowSelectionClear
                                             onTimeRangeChanged={this.props.handleSelectionChange}

@@ -67,6 +67,7 @@ class Dashboard extends React.Component {
             timerange: initEEG.range(),
             selected: 0,
             selections:initialSelections,
+            qualifications: {},
             trackerEventIn_EEG: null,
             trackerEventIn_EMG: null,
             trackerEventOut_EEG: null,
@@ -74,7 +75,9 @@ class Dashboard extends React.Component {
             trackerX: null
         };
     }
-
+    getText = (i)=>{
+        return this.state.qualifications[i]?this.state.qualifications[i]:null
+    }
     handleTrackerChanged = (t, scale) => {
         this.setState({
             tracker: t,
@@ -105,8 +108,14 @@ class Dashboard extends React.Component {
         let dataPerPeriod = parseInt(EEG.size() / numCuts)
         let selected = this.state.selected
         let offset = this.state.offsetData
+        let eventKey = event.key
+        let qualifications =  this.state.qualifications
+        if (eventKey!='ArrowRight' & eventKey!='ArrowLeft'){
+            qualifications={...qualifications,[selected]:event.key}
+            eventKey='ArrowRight'
+        }
         //https://keycode.info/        
-        switch(event.key){
+        switch(eventKey){
             case 'ArrowRight':
                 if (selected<numCuts-1){
                     selected+=1
@@ -130,13 +139,14 @@ class Dashboard extends React.Component {
         }
         let newEEG = cutTimeSeries(EEG,offset*dataPerPeriod,dataPerPeriod*visibleNumPeriods)
         let newEMG = cutTimeSeries(EMG,offset*dataPerPeriod,dataPerPeriod*visibleNumPeriods)
-        this.setState(()=>{
+        this.setState((state)=>{
             return {
                 selected:selected, 
                 offsetData:offset,
                 timerange: newEEG.range(),
                 EEG:newEEG,
-                EMG:newEMG
+                EMG:newEMG,
+                qualifications: qualifications
             }
         })
     }
@@ -165,6 +175,7 @@ class Dashboard extends React.Component {
                     onBackgroundClick={this.onBackgroundClick}
                     onTimeRangeClicked={this.onTimeRangeClicked}
                     maxSignal={getAmplitude(EEG)}
+                    getText={this.getText}
                 />
                 <TimeSeriesPlot 
                     data={this.state.EMG}
@@ -181,6 +192,7 @@ class Dashboard extends React.Component {
                     onBackgroundClick={this.onBackgroundClick}
                     onTimeRangeClicked={this.onTimeRangeClicked}
                     maxSignal={getAmplitude(EMG)}
+                    getText={this.getText}
                 />
             </div>
         )
