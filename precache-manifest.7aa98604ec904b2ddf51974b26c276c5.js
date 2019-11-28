@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "a7babb1d0f192a10f6be3801137493e9",
+    "revision": "febd6884b6f8f21386bd478cc0a064d3",
     "url": "/AutoScorer/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/AutoScorer/static/css/2.b0bb7f2c.chunk.css"
   },
   {
-    "revision": "8d3b69be4811c0450562",
+    "revision": "0fe4b2c5d4620b6bce55",
     "url": "/AutoScorer/static/css/main.5e4e9510.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/AutoScorer/static/js/2.bcc41faf.chunk.js"
   },
   {
-    "revision": "8d3b69be4811c0450562",
-    "url": "/AutoScorer/static/js/main.1bda7786.chunk.js"
+    "revision": "0fe4b2c5d4620b6bce55",
+    "url": "/AutoScorer/static/js/main.067946a8.chunk.js"
   },
   {
     "revision": "2f02aa410ff521ed078f",
