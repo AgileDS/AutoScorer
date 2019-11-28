@@ -1,4 +1,10 @@
+
+from brainy_rats_app.api.models import Dataset
+from rest_framework.generics import CreateAPIView
+from rest_framework.generics import ListAPIView
+
 from rest_framework.generics import GenericAPIView, CreateAPIView
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -10,8 +16,20 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 
-from brainy_rats_app.api.serializers import DatasetSerializer, UserSerializer
+
+from brainy_rats_app.api.serializers import DatasetSerializer, DatasetSerializerView, UserSerializer
+
 from brainy_rats_app.users.models import User
+
+class TokenPermission(IsAuthenticated):
+    '''
+    Class to check if the tocken is valid.
+    '''
+
+    def has_permission(self, request, view):
+        user = request.user
+        token = ''
+        pass
 
 
 class HelloView(APIView):
@@ -22,9 +40,19 @@ class HelloView(APIView):
         return Response(content)
 
 
-class DatasetViewSet(CreateAPIView):
+class DatasetCreateView(CreateAPIView): 
     permission_classes = (IsAuthenticated,)
     serializer_class = DatasetSerializer
+
+class DatasetListView(ListAPIView): 
+    #permission_classes = (IsAuthenticated,)
+    serializer_class = DatasetSerializerView
+
+    def get_queryset(self):
+        #return Dataset.objects.all()
+        user = self.request.user
+        return Dataset.objects.filter(owner=user)
+
 
 
 class CreateUserAPIView(GenericAPIView):
