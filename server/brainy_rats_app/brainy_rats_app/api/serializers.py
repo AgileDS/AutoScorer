@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from brainy_rats_app.api.models import Dataset, DatasetRow
+from brainy_rats_app.users.models import User
 
 
 class DatasetRowSerializer(ModelSerializer):
@@ -10,6 +11,7 @@ class DatasetRowSerializer(ModelSerializer):
             'eeg',
             'emg'
         )
+
 
 class DatasetSerializer(ModelSerializer):
     rows = DatasetRowSerializer(many=True)
@@ -36,4 +38,14 @@ class DatasetSerializerView(ModelSerializer):
         fields = (
             'name',
             'rows'
+
+        )
+
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'password'
         )
