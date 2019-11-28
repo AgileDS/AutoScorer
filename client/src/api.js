@@ -4,7 +4,7 @@ const storage = {
     TOKEN: 'AutoScorer-Token'
 };
 
-var server = process.env.MY_API_URL || "http://localhost:8000";
+var server = 'https://fierce-citadel-47273.herokuapp.com'|| "http://localhost:8000";
 console.log("server url:", server, process.env.NODE_ENV, process.env.MY_API_URL);
 server = server + "/api"
 

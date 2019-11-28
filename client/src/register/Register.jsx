@@ -5,7 +5,9 @@ import Button from "react-bootstrap/Button";
 import {registerReq} from "../api";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Alert from "react-bootstrap/Alert";
-
+import {
+    Link
+} from "react-router-dom";
 const validateForm = (errors) => {
     let valid = true;
     Object.values(errors).forEach(
@@ -123,9 +125,9 @@ class Register extends React.Component {
                         <Button className='col-md-8' variant="primary" type="submit">
                             Register
                         </Button>
-                        <Button className='col-md-4 text-right' align="right" variant="link" href="/">
+                        <Link to='/login'><Button className='col-md-4 text-right' align="right" variant="link" >
                             Log in
-                        </Button>
+                        </Button></Link>
                     </div>
                     <br/>
                 </Form>

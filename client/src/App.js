@@ -1,9 +1,10 @@
 import React from 'react';
 import './App.css';
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Switch,
-  Route
+  Route,
+  Redirect
 } from "react-router-dom";
 import Login from './login/Login'
 import Register from './register/Register'
@@ -12,11 +13,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
-    <Router>
+    <Router basename='/'>
       <div>
         
         <Switch>
           <Route exact path="/">
+            <Redirect to="/login"/>
+          </Route>
+          <Route path="/login">
             <Login />
           </Route>
           <Route path="/dashboard">
