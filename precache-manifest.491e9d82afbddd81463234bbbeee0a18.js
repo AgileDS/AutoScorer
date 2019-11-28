@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "91a7af2732997dec9dcf01786a3519df",
+    "revision": "16b94858bfee9f029b39ad8e4e4cefb2",
     "url": "/AutoScorer/index.html"
   },
   {
-    "revision": "19dda33d6cc7afeb5a09",
+    "revision": "6f29658b80f52f895ffd",
     "url": "/AutoScorer/static/css/2.b0bb7f2c.chunk.css"
   },
   {
-    "revision": "dec59af0c57d4e64387c",
+    "revision": "c1b0888c21e14799bb96",
     "url": "/AutoScorer/static/css/main.5e4e9510.chunk.css"
   },
   {
-    "revision": "19dda33d6cc7afeb5a09",
-    "url": "/AutoScorer/static/js/2.bcc41faf.chunk.js"
+    "revision": "6f29658b80f52f895ffd",
+    "url": "/AutoScorer/static/js/2.caf3063b.chunk.js"
   },
   {
-    "revision": "dec59af0c57d4e64387c",
-    "url": "/AutoScorer/static/js/main.cc945b1f.chunk.js"
+    "revision": "c1b0888c21e14799bb96",
+    "url": "/AutoScorer/static/js/main.10c520f1.chunk.js"
   },
   {
     "revision": "2f02aa410ff521ed078f",
