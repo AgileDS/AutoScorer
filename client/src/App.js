@@ -10,6 +10,7 @@ import Login from './login/Login'
 import Register from './register/Register'
 import Dashboard from './dashboard/Dashboard'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import UploadForm from './dashboard/UploadForm';
 
 function App() {
   return (
@@ -22,6 +23,10 @@ function App() {
           </Route>
           <Route path="/login">
             <Login />
+          </Route>
+          <Route path="/dashboard">
+            <UploadForm handleDataReady={(data)=>{console.log('print')}}/>
+            <Dashboard />
           </Route>
           <Route path="/dashboard">
             <Dashboard />
