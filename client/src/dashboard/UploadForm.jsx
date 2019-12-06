@@ -1,16 +1,18 @@
 import React from 'react'
 import {EdfDecoder} from 'edfdecoder'
-function UploadForm(props) {
-  return(
+class UploadForm extends React.Component {
+  render(props){
+    return(
     <div>
-      <input type="file" onChange={setFile.bind(this)} accept='.edf'/>
-      <input type="button" onClick={postFile} value="Upload" />
+      <input type="file" onChange={this.setFile.bind(this)} accept='.edf'/>
+      <input type="button" onClick={this.postFile} value="Upload" />
     </div>
-  )
-  function postFile(event) {   
+    )
+  }
+  postFile(event) {   
     // HTTP POST  
   }
-  function setFile(event) {
+  setFile(event) {
     // Get the details of the files
     let file = event.target.files[0]
     let decoder = new EdfDecoder();
@@ -20,15 +22,18 @@ function UploadForm(props) {
         let myEdf = decoder.getOutput();
         console.log('j')
     })*/
-    let reader = new FileReader();
-    reader.onloadend = function(){
-      let buff = reader.result;
-      decoder.setInput(buff);        
-      decoder.decode();
-      this.props.handleDataReady(decoder.getOutput())
+    if (file != null){
+      let reader = new FileReader();
+      reader.onloadend = ()=>{
+        let decoder = new EdfDecoder();
+        let buff = reader.result;
+        decoder.setInput(buff);        
+        decoder.decode();
+        this.props.handleData(decoder.getOutput())
+      }
+      reader.readAsArrayBuffer(file);
     }
-    reader.readAsArrayBuffer(file);
-    console.log('j')
+    
   }
 }
 
