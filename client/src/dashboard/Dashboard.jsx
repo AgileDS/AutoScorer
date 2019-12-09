@@ -1,6 +1,6 @@
 import React from 'react';
 import TimeSeriesPlot from '../components/TimeSeriesPlot'
-
+import _ from 'lodash'
 // Pond
 import { TimeSeries, TimeRange } from "pondjs";
 /**
@@ -58,7 +58,7 @@ class Dashboard extends React.Component {
         };
     }
     getText = (i)=>{
-        return this.state.qualifications[i]?this.state.qualifications[i]:null
+        return this.state.qualifications[i+this.state.offsetData]?this.state.qualifications[i+this.state.offsetData]:null
     }
     handleTrackerChanged = (t, scale) => {
         this.setState({
@@ -101,24 +101,17 @@ class Dashboard extends React.Component {
         let timeSeriesEEG = new TimeSeries({
             name: `EEG`,
             columns: ["time", "in"],
-            points: Array.from(valuesEEG).map( (p,i) => [parseInt((beginTime+i*secondsInRecord) * 1000), p])
+            points: _.map(valuesEEG, (p,i) => [parseInt((beginTime+i*secondsInRecord) * 1000), p])
         });
         let valuesEMG = edf.getPhysicalSignalConcatRecords(1, offsetData, visibleNumPeriods)
         // Object.values(sample["EMG"]).map( (p,i) => [parseInt((beginTime+i*timeDelta) * 1000), p])
         let timeSeriesEMG = new TimeSeries({
             name: `EMG`,
             columns: ["time", "in"],
-            points: Array.from(valuesEMG).map( (p,i) => [parseInt((beginTime+i*secondsInRecord) * 1000), p])
+            points: _.map(valuesEMG,  (p,i) => [parseInt((beginTime+i*secondsInRecord) * 1000), p])
         });
-        
-        this.setState({
-            EEG: timeSeriesEEG,//.slice(beginTime, beginTime+(initialPeriod*1000)*3.5)
-            EMG: timeSeriesEMG,
-            offsetData: offsetData,
-            timerange: timeSeriesEEG.range(),
-            selections: breakTimeRange(timeSeriesEEG.timerange().toJSON()[0], timeSeriesEEG.timerange().toJSON()[1], visibleNumPeriods-1)
-        })
-    
+        let selections = breakTimeRange(timeSeriesEEG.timerange().toJSON()[0], timeSeriesEEG.timerange().toJSON()[1], visibleNumPeriods-1)
+        return [timeSeriesEEG, timeSeriesEMG, selections]
     }
     _handleKeyDown = (event) => {     
         // let numCuts =(endTime-beginTime)/initialPeriod //TOTAL DE TALLS
@@ -127,7 +120,7 @@ class Dashboard extends React.Component {
         let eventKey = event.key
         let qualifications =  this.state.qualifications
         if (eventKey!='ArrowRight' & eventKey!='ArrowLeft'){
-            qualifications={...qualifications,[selected]:event.key}
+            qualifications={...qualifications,[offset+selected]:event.key}
             eventKey='ArrowRight'
         }
         //https://keycode.info/        
@@ -137,24 +130,42 @@ class Dashboard extends React.Component {
                 // this.setState({timerange:breakTimeRange(beginTime, endTime, initialPeriod*secondsInRecord*100)})
                 break;
             case 'ArrowRight':
-                if (true) offset+=1 // at the end
+                //if (true)  // at the end
                 if (selected<selectedAt){
                     selected+=1                  
+                }else{
+                    offset+=1
                 }
                 
                 break;
             case 'ArrowLeft':
                 if (offset>0)offset-=1
-                if (selected>selectedAt){
-                    selected-=1
+                else{
+                    if (selected>0){
+                        selected-=1
+                    }
                 }
                 break;
             default:
                 break
         }
-        if (offset!=this.state.offsetData) this.edfParser(offset)
-        this.setState({selected:selected})
-        console.log(selected)
+        if (offset!=this.state.offsetData) {
+            let parsed = this.edfParser(offset)
+            let timeSeriesEEG = parsed[0]
+            let timeSeriesEMG = parsed[1]
+            let selections = parsed[2]
+            this.setState({
+                EEG: timeSeriesEEG,
+                EMG: timeSeriesEMG,
+                offsetData: offset,
+                selected:selected,
+                timerange: timeSeriesEEG.range(),
+                selections: selections,
+                qualifications: qualifications
+            })
+        }else{
+            this.setState({selected:selected,qualifications: qualifications})
+        }
         /*
         this.setState((state)=>{
             return {
@@ -175,7 +186,16 @@ class Dashboard extends React.Component {
     }
     componentDidUpdate(prevProps, prevState) {
         if (this.props.edf!=null && prevProps.edf!==this.props.edf){
-            this.edfParser(0)
+            let parsed = this.edfParser(0)
+            let timeSeriesEEG = parsed[0]
+            let timeSeriesEMG = parsed[1]
+            let selections = parsed[2]
+            this.setState({
+                EEG: timeSeriesEEG,//.slice(beginTime, beginTime+(initialPeriod*1000)*3.5)
+                EMG: timeSeriesEMG,
+                timerange: timeSeriesEEG.range(),
+                selections: selections
+            })
         }
     }
     render(){
@@ -196,7 +216,8 @@ class Dashboard extends React.Component {
                     handleSelectionChange={this.handleSelectionChange}
                     onBackgroundClick={this.onBackgroundClick}
                     onTimeRangeClicked={this.onTimeRangeClicked}
-                    maxSignal={getAmplitude(this.state.EEG)}
+                    maxSignal={800}
+                    minSignal={-800}
                     getText={this.getText}
                 />:null }
                 {this.state.EMG ?<TimeSeriesPlot 
@@ -213,7 +234,8 @@ class Dashboard extends React.Component {
                     handleSelectionChange={this.handleSelectionChange}
                     onBackgroundClick={this.onBackgroundClick}
                     onTimeRangeClicked={this.onTimeRangeClicked}
-                    maxSignal={getAmplitude(this.state.EMG)}
+                    maxSignal={6000}
+                    minSignal={-6000}
                     getText={this.getText}
                 />:null}
             </div>

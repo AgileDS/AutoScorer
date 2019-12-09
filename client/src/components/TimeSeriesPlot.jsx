@@ -99,7 +99,7 @@ class TimeSeriesPlot extends React.Component {
                                         id="traffic"
                                         label="Traffic (bps)"
                                         labelOffset={0}
-                                        min={-this.props.maxSignal}
+                                        min={this.props.minSignal}
                                         max={this.props.maxSignal}
                                         absolute={true}
                                         width="60"
