@@ -6,9 +6,9 @@ import { TimeSeries, TimeRange } from "pondjs";
 /**
  * DATA
  */
-const visibleNumPeriods = 6
-const selectedAt = 2
-
+const visibleNumPeriods = 3
+const selectedAt = 1
+const secondsInPeriod = 10
 
 
 /**
@@ -96,21 +96,26 @@ class Dashboard extends React.Component {
         let secondsInRecord = edf.getRecordDuration()
         let beginTime = edf.getRecordingStartDate().getTime()
         
-        let valuesEEG = edf.getPhysicalSignalConcatRecords(0, offsetData, visibleNumPeriods)
+        let valuesEEG = edf.getPhysicalSignalConcatRecords(0, offsetData*secondsInPeriod, visibleNumPeriods*secondsInPeriod)
         // Object.values(sample["EMG"]).map( (p,i) => [parseInt((beginTime+i*timeDelta) * 1000), p])
+        let multiplier = 1 // beginTime>0?1:-1
+        let mapTime = _.map(valuesEEG.slice(0,10), (p,i) => {
+            return beginTime+multiplier*(i+offsetData*secondsInPeriod)*secondsInRecord * 1000
+        })
+        //console.log(mapTime)
         let timeSeriesEEG = new TimeSeries({
             name: `EEG`,
             columns: ["time", "in"],
-            points: _.map(valuesEEG, (p,i) => [parseInt((beginTime+i*secondsInRecord) * 1000), p])
+            points: _.map(valuesEEG, (p,i) => [parseInt(beginTime+multiplier*(i+offsetData*secondsInPeriod)*secondsInRecord * 100), p])
         });
-        let valuesEMG = edf.getPhysicalSignalConcatRecords(1, offsetData, visibleNumPeriods)
+        let valuesEMG = edf.getPhysicalSignalConcatRecords(1, offsetData*secondsInPeriod, visibleNumPeriods*secondsInPeriod)
         // Object.values(sample["EMG"]).map( (p,i) => [parseInt((beginTime+i*timeDelta) * 1000), p])
         let timeSeriesEMG = new TimeSeries({
             name: `EMG`,
             columns: ["time", "in"],
-            points: _.map(valuesEMG,  (p,i) => [parseInt((beginTime+i*secondsInRecord) * 1000), p])
+            points: _.map(valuesEMG,  (p,i) => [parseInt(beginTime+multiplier*(i+offsetData*secondsInPeriod)*secondsInRecord * 100), p])
         });
-        let selections = breakTimeRange(timeSeriesEEG.timerange().toJSON()[0], timeSeriesEEG.timerange().toJSON()[1], visibleNumPeriods-1)
+        let selections = breakTimeRange(timeSeriesEEG.timerange().toJSON()[0], timeSeriesEEG.timerange().toJSON()[1], visibleNumPeriods)
         return [timeSeriesEEG, timeSeriesEMG, selections]
     }
     _handleKeyDown = (event) => {     
@@ -119,7 +124,7 @@ class Dashboard extends React.Component {
         let offset = this.state.offsetData
         let eventKey = event.key
         let qualifications =  this.state.qualifications
-        if (eventKey!='ArrowRight' & eventKey!='ArrowLeft'){
+        if (['a','w','q','A','W','Q'].indexOf(eventKey) !== -1){
             qualifications={...qualifications,[offset+selected]:event.key}
             eventKey='ArrowRight'
         }
@@ -129,14 +134,19 @@ class Dashboard extends React.Component {
                 console.log('hey')
                 // this.setState({timerange:breakTimeRange(beginTime, endTime, initialPeriod*secondsInRecord*100)})
                 break;
+            case 'PageUp':
+                offset = offset+visibleNumPeriods
+                break;
+            case 'PageDown':
+                offset = offset-visibleNumPeriods>0?offset-visibleNumPeriods:0
+                break;
             case 'ArrowRight':
                 //if (true)  // at the end
                 if (selected<selectedAt){
                     selected+=1                  
                 }else{
                     offset+=1
-                }
-                
+                }                
                 break;
             case 'ArrowLeft':
                 if (offset>0)offset-=1
@@ -179,10 +189,10 @@ class Dashboard extends React.Component {
         })*/
     }
     componentDidMount(){
-        document.addEventListener("keydown", this._handleKeyDown);
+        document.addEventListener("keydown", _.debounce(this._handleKeyDown,50));
     }
     componentWillUnmount() {
-        document.removeEventListener("keydown", this._handleKeyDown);
+        document.removeEventListener("keydown", _.debounce(this._handleKeyDown, 50));
     }
     componentDidUpdate(prevProps, prevState) {
         if (this.props.edf!=null && prevProps.edf!==this.props.edf){

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@tensorflow/tfjs": "^1.4.0",
     "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
     "edfdecoder": "^0.1.1",
