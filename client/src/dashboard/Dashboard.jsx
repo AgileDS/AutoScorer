@@ -3,13 +3,28 @@ import TimeSeriesPlot from '../components/TimeSeriesPlot'
 import _ from 'lodash'
 // Pond
 import { TimeSeries, TimeRange } from "pondjs";
+import * as tf from '@tensorflow/tfjs'
 /**
  * DATA
  */
 const visibleNumPeriods = 3
 const selectedAt = 1
 const secondsInPeriod = 10
+const labels_dict = {0 : 'W', 1 : 'NR', 2 : 'R'};
 
+async function predict(model, array) {
+    function array_to_tensor(array) {
+        const shape = [1, 5000, 2];
+        const tensor = tf.tensor3d(array, shape, "float32");
+        return tensor
+    }
+    const tensor =  array_to_tensor(array)
+    const prediction = model.predict(tensor).dataSync();
+    const prediction_arr = Array.from(prediction)
+
+    const score = labels_dict[prediction_arr.indexOf(_.max(prediction_arr))];
+    return score
+}
 
 /**
  * UTILS
@@ -50,6 +65,7 @@ class Dashboard extends React.Component {
             selected: 0,
             selections:null,
             qualifications: {},
+            prediction: null,
             trackerEventIn_EEG: null,
             trackerEventIn_EMG: null,
             trackerEventOut_EEG: null,
@@ -58,7 +74,11 @@ class Dashboard extends React.Component {
         };
     }
     getText = (i)=>{
-        return this.state.qualifications[i+this.state.offsetData]?this.state.qualifications[i+this.state.offsetData]:null
+        if (this.state.qualifications[i+this.state.offsetData]!=null){
+            return this.state.qualifications[i+this.state.offsetData]
+        } else if(i===this.state.selected) {
+            return this.state.prediction
+        }
     }
     handleTrackerChanged = (t, scale) => {
         this.setState({
@@ -70,6 +90,7 @@ class Dashboard extends React.Component {
             trackerX: t && scale(t)
         });
     }
+    
     handleTimeRangeChange = timerange => {
         this.setState({ timerange });
     }
@@ -80,11 +101,19 @@ class Dashboard extends React.Component {
         //this.setState({ selections });
     }
     onBackgroundClick = ()=>{
-        this.setState({ selection: null })
+        this.setState({ selection: null, prediction: null })
     }
     onTimeRangeClicked = (i)=>{
         this.setState({ selected: i%visibleNumPeriods })
         console.log(i,i%visibleNumPeriods)
+    }
+    getPrediction = (i, model=null)=>{
+        // i == offsetData+selected
+        let valEEG =  this.props.edf.getPhysicalSignalConcatRecords(0, (i)*secondsInPeriod, secondsInPeriod)
+        let valEMG =  this.props.edf.getPhysicalSignalConcatRecords(1, (i)*secondsInPeriod, secondsInPeriod)
+        let concat = Array.from(valEEG).concat(Array.from(valEMG))
+        if (!model) model = this.state.model
+        return predict(model, Float32Array.from(concat))
     }
     edfParser = (offsetData=0)=>{
         let edf = this.props.edf
@@ -164,17 +193,22 @@ class Dashboard extends React.Component {
             let timeSeriesEEG = parsed[0]
             let timeSeriesEMG = parsed[1]
             let selections = parsed[2]
-            this.setState({
-                EEG: timeSeriesEEG,
-                EMG: timeSeriesEMG,
-                offsetData: offset,
-                selected:selected,
-                timerange: timeSeriesEEG.range(),
-                selections: selections,
-                qualifications: qualifications
+            this.getPrediction(offset+selected).then((pred)=>{
+                this.setState({
+                    EEG: timeSeriesEEG,
+                    EMG: timeSeriesEMG,
+                    offsetData: offset,
+                    selected:selected,
+                    timerange: timeSeriesEEG.range(),
+                    selections: selections,
+                    qualifications: qualifications,
+                    prediction: pred
+                })
             })
         }else{
-            this.setState({selected:selected,qualifications: qualifications})
+            this.getPrediction(offset+selected).then((pred)=>{
+                this.setState({selected:selected, qualifications: qualifications, prediction:pred})
+            })
         }
         /*
         this.setState((state)=>{
@@ -200,11 +234,17 @@ class Dashboard extends React.Component {
             let timeSeriesEEG = parsed[0]
             let timeSeriesEMG = parsed[1]
             let selections = parsed[2]
-            this.setState({
-                EEG: timeSeriesEEG,//.slice(beginTime, beginTime+(initialPeriod*1000)*3.5)
-                EMG: timeSeriesEMG,
-                timerange: timeSeriesEEG.range(),
-                selections: selections
+            tf.loadLayersModel('https://raw.githubusercontent.com/AgileDS/AutoScorer/model_dev/model/TF-js/1CNN-Model/model.json').then((model)=>{
+                this.getPrediction(0, model).then((prediction)=>{
+                    this.setState({
+                        EEG: timeSeriesEEG,//.slice(beginTime, beginTime+(initialPeriod*1000)*3.5)
+                        EMG: timeSeriesEMG,
+                        timerange: timeSeriesEEG.range(),
+                        selections: selections,
+                        model: model,
+                        prediction:prediction
+                    })
+                })
             })
         }
     }
