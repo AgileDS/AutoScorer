@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/AutoScorer/static/css/main.5e4e9510.chunk.css",
-    "main.js": "/AutoScorer/static/js/main.17ef2102.chunk.js",
-    "main.js.map": "/AutoScorer/static/js/main.17ef2102.chunk.js.map",
+    "main.js": "/AutoScorer/static/js/main.c9787858.chunk.js",
+    "main.js.map": "/AutoScorer/static/js/main.c9787858.chunk.js.map",
     "runtime-main.js": "/AutoScorer/static/js/runtime-main.411a3a67.js",
     "runtime-main.js.map": "/AutoScorer/static/js/runtime-main.411a3a67.js.map",
     "static/css/2.b0bb7f2c.chunk.css": "/AutoScorer/static/css/2.b0bb7f2c.chunk.css",
-    "static/js/2.efa76f20.chunk.js": "/AutoScorer/static/js/2.efa76f20.chunk.js",
-    "static/js/2.efa76f20.chunk.js.map": "/AutoScorer/static/js/2.efa76f20.chunk.js.map",
+    "static/js/2.1eb04b4b.chunk.js": "/AutoScorer/static/js/2.1eb04b4b.chunk.js",
+    "static/js/2.1eb04b4b.chunk.js.map": "/AutoScorer/static/js/2.1eb04b4b.chunk.js.map",
     "index.html": "/AutoScorer/index.html",
-    "precache-manifest.ea0d29591fdd6a8558b1755e46d6b321.js": "/AutoScorer/precache-manifest.ea0d29591fdd6a8558b1755e46d6b321.js",
+    "precache-manifest.8e5613f176fcf7186f32b673b5500b38.js": "/AutoScorer/precache-manifest.8e5613f176fcf7186f32b673b5500b38.js",
     "service-worker.js": "/AutoScorer/service-worker.js",
     "static/css/2.b0bb7f2c.chunk.css.map": "/AutoScorer/static/css/2.b0bb7f2c.chunk.css.map",
     "static/css/main.5e4e9510.chunk.css.map": "/AutoScorer/static/css/main.5e4e9510.chunk.css.map"
@@ -17,8 +17,8 @@
   "entrypoints": [
     "static/js/runtime-main.411a3a67.js",
     "static/css/2.b0bb7f2c.chunk.css",
-    "static/js/2.efa76f20.chunk.js",
+    "static/js/2.1eb04b4b.chunk.js",
     "static/css/main.5e4e9510.chunk.css",
-    "static/js/main.17ef2102.chunk.js"
+    "static/js/main.c9787858.chunk.js"
   ]
 }
