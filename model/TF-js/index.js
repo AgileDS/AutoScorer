@@ -1,5 +1,6 @@
 let model = -1;
 const PATH = '/1CNN-Model/model.json';
+// const PATH = 'https://raw.githubusercontent.com/AgileDS/AutoScorer/model_dev/model/TF-js/1CNN-Model/model.json';
 const labels_dict = {0 : 'W', 1 : 'NR', 2 : 'R'};
 
 async function setup() {
