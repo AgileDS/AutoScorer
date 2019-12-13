@@ -1,24 +1,24 @@
 {
   "files": {
-    "main.css": "/AutoScorer/static/css/main.5e4e9510.chunk.css",
-    "main.js": "/AutoScorer/static/js/main.eda5670b.chunk.js",
-    "main.js.map": "/AutoScorer/static/js/main.eda5670b.chunk.js.map",
-    "runtime-main.js": "/AutoScorer/static/js/runtime-main.411a3a67.js",
-    "runtime-main.js.map": "/AutoScorer/static/js/runtime-main.411a3a67.js.map",
-    "static/css/2.b0bb7f2c.chunk.css": "/AutoScorer/static/css/2.b0bb7f2c.chunk.css",
-    "static/js/2.5f7dc814.chunk.js": "/AutoScorer/static/js/2.5f7dc814.chunk.js",
-    "static/js/2.5f7dc814.chunk.js.map": "/AutoScorer/static/js/2.5f7dc814.chunk.js.map",
-    "index.html": "/AutoScorer/index.html",
-    "precache-manifest.a159951cd8bf434404bee29fc9e30c4d.js": "/AutoScorer/precache-manifest.a159951cd8bf434404bee29fc9e30c4d.js",
-    "service-worker.js": "/AutoScorer/service-worker.js",
-    "static/css/2.b0bb7f2c.chunk.css.map": "/AutoScorer/static/css/2.b0bb7f2c.chunk.css.map",
-    "static/css/main.5e4e9510.chunk.css.map": "/AutoScorer/static/css/main.5e4e9510.chunk.css.map"
+    "main.css": "/autoscorer/static/css/main.5e4e9510.chunk.css",
+    "main.js": "/autoscorer/static/js/main.a9370ce8.chunk.js",
+    "main.js.map": "/autoscorer/static/js/main.a9370ce8.chunk.js.map",
+    "runtime-main.js": "/autoscorer/static/js/runtime-main.b511070d.js",
+    "runtime-main.js.map": "/autoscorer/static/js/runtime-main.b511070d.js.map",
+    "static/css/2.b0bb7f2c.chunk.css": "/autoscorer/static/css/2.b0bb7f2c.chunk.css",
+    "static/js/2.5f7dc814.chunk.js": "/autoscorer/static/js/2.5f7dc814.chunk.js",
+    "static/js/2.5f7dc814.chunk.js.map": "/autoscorer/static/js/2.5f7dc814.chunk.js.map",
+    "index.html": "/autoscorer/index.html",
+    "precache-manifest.20c0548c94baa3a39b94db52b4f56a23.js": "/autoscorer/precache-manifest.20c0548c94baa3a39b94db52b4f56a23.js",
+    "service-worker.js": "/autoscorer/service-worker.js",
+    "static/css/2.b0bb7f2c.chunk.css.map": "/autoscorer/static/css/2.b0bb7f2c.chunk.css.map",
+    "static/css/main.5e4e9510.chunk.css.map": "/autoscorer/static/css/main.5e4e9510.chunk.css.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.411a3a67.js",
+    "static/js/runtime-main.b511070d.js",
     "static/css/2.b0bb7f2c.chunk.css",
     "static/js/2.5f7dc814.chunk.js",
     "static/css/main.5e4e9510.chunk.css",
-    "static/js/main.eda5670b.chunk.js"
+    "static/js/main.a9370ce8.chunk.js"
   ]
 }
