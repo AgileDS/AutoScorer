@@ -4,15 +4,26 @@ const storage = {
     TOKEN: 'AutoScorer-Token'
 };
 
-var server = 'https://fierce-citadel-47273.herokuapp.com'|| "http://localhost:8000";
-console.log("server url:", server, process.env.NODE_ENV, process.env.MY_API_URL);
+var server = "http://localhost:8000";
+if (process.env.NODE_ENV === 'production') {
+    server =  'https://fierce-citadel-47273.herokuapp.com';
+}
+
+console.log("server url:", server, process.env.NODE_ENV);
 server = server + "/api"
 
-const headers = {
+var headers = {
     // 'Content-Type': 'application/json',
     // "Access-Control-Allow-Origin": "*",
     // 'Access-Control-Allow-Credentials': 'true'
 }
+
+var set_token = function(token) {
+    token = token || localStorage.getItem(storage.TOKEN);
+    headers.Authorization = 'Token ' + token;
+}
+
+set_token(null);
 
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -25,6 +36,7 @@ export async function loginReq(loginForm) {
         if (response.status === 200 && response.data.token) {
             console.log(response);
             localStorage.setItem(storage.TOKEN, response.data.token);
+            set_token(response.data.token);
             return true;
         }
         console.log("Response not ok", response)
@@ -41,6 +53,7 @@ export async function registerReq(registerForm) {
         if (response.data.token) {
             console.log("registerReq", response)
             localStorage.setItem(storage.TOKEN, response.data.token);
+            set_token(response.data.token);
             return true;
         } else if (response.data.Error) {
             return response.data.Error;
@@ -52,3 +65,49 @@ export async function registerReq(registerForm) {
         return false;
     }
 }
+
+var selectionsToApi = function(selections) {
+    let array = [];
+    for (const [key, value] of Object.entries(selections)) {
+        console.log(key, value);
+        array.push({
+            'index': key,
+            'score': value
+        });
+    }
+    return array
+}
+
+export async function sendQualificationsReq(name, size, selections) {
+    let data = {
+        'name': name,
+        'size': size,
+        'rows': selectionsToApi(selections)
+    }
+    console.log("api", data)
+    try {
+        let response = await axios.post(server + "/update-create-dataset/", data, {headers: headers})
+        if (response.status >= 200 && response.status < 300)
+            return true;
+        console.log("send qualification failed? ", response.status)
+        return false;
+    } catch (e) {
+        console.log("error", e);
+        return false;
+    }
+}
+
+export async function listQualifications() {
+    try {
+        let response = await axios.get(server + '/dataset_list/', {headers: headers})
+        if (response.status >= 200 && response.status < 300) {
+            console.log(response.data)
+            return response.data;
+        }
+        return false;
+    } catch (e) {
+        console.log("error", e);
+        return false;
+    }
+}
+

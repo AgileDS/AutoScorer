@@ -3,6 +3,8 @@ import TimeSeriesPlot from '../components/TimeSeriesPlot'
 
 // Pond
 import { TimeSeries, TimeRange } from "pondjs";
+import Button from "react-bootstrap/Button";
+import {listQualifications, sendQualificationsReq} from "../api";
 /**
  * DATA
  */
@@ -57,6 +59,7 @@ class Dashboard extends React.Component {
         let initEEG = cutTimeSeries(EEG,0,dataPerPeriod*visibleNumPeriods)//slice(1441051972000,1441138285686)
         let initEMG = cutTimeSeries(EMG,0,dataPerPeriod*visibleNumPeriods)
         //console.log(initEEG)
+        listQualifications();
         //const max = Math.max(Math.abs(this.props.data.collection().max('in')), Math.abs(this.props.data.collection().min('in')))
         //let initEMG = EMG.slice(beginTime*1000,endTime*1000)
         this.state = {
@@ -79,6 +82,7 @@ class Dashboard extends React.Component {
         return this.state.qualifications[i]?this.state.qualifications[i]:null
     }
     handleTrackerChanged = (t, scale) => {
+        console.log("t: ", t)
         this.setState({
             tracker: t,
             trackerEventIn_EEG: t && EEG.at(EEG.bisect(t)),
@@ -112,6 +116,7 @@ class Dashboard extends React.Component {
         let qualifications =  this.state.qualifications
         if (eventKey!='ArrowRight' & eventKey!='ArrowLeft'){
             qualifications={...qualifications,[selected]:event.key}
+            console.log("ym: ", event.key, offset*dataPerPeriod)
             eventKey='ArrowRight'
         }
         //https://keycode.info/        
@@ -150,6 +155,11 @@ class Dashboard extends React.Component {
             }
         })
     }
+    send_selections = () => {
+        console.log("send", this.state.qualifications);
+        console.log("timerange", this.state.EEG, this.state.EMG);
+        sendQualificationsReq('test', 10, this.state.qualifications)
+    }
     componentDidMount(){
         document.addEventListener("keydown", this._handleKeyDown);
     }
@@ -160,6 +170,7 @@ class Dashboard extends React.Component {
         console.log(this.state.EEG)
         return (
             <div>
+                <Button onClick={this.send_selections}>Save selections</Button>
                 <TimeSeriesPlot 
                     data={this.state.EEG}
                     tracker={this.state.tracker} 
