@@ -1,7 +1,7 @@
 from brainy_rats_app.api.models import Dataset, DatasetRow
 from rest_framework.generics import ListAPIView
 
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, RetrieveAPIView
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,7 +15,7 @@ from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 
 
-from brainy_rats_app.api.serializers import DatasetSerializer, DatasetSerializerView, UserSerializer
+from brainy_rats_app.api.serializers import DatasetListSerializerView, DatasetSerializer, DatasetSerializerView, UserSerializer
 
 from brainy_rats_app.users.models import User
 
@@ -72,16 +72,27 @@ class DatasetCreateUpdateView(GenericAPIView):
         except (TypeError, KeyError):
             return {}
 
-
-class DatasetListView(ListAPIView): 
-    #permission_classes = (IsAuthenticated,)
+class DatasetView(RetrieveAPIView): 
+    permission_classes = (IsAuthenticated,)
+    lookup_field = 'name'
     serializer_class = DatasetSerializerView
 
     def get_queryset(self):
-        #return Dataset.objects.all()
         user = self.request.user
-        return Dataset.objects.filter(owner=user)
+        return Dataset.objects.filter(user=user)
 
+
+    
+ 
+class DatasetListView(ListAPIView): 
+    permission_classes = (IsAuthenticated,)
+    
+    serializer_class = DatasetListSerializerView
+
+    def get_queryset(self):
+        user = self.request.user
+        return Dataset.objects.filter(user=user)
+    
 
 class CreateUserAPIView(GenericAPIView):
     serializer_class = UserSerializer
