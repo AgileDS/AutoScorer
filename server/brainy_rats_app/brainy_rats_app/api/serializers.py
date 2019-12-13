@@ -33,6 +33,14 @@ class DatasetSerializer(ModelSerializer):
         return validated_data
 
 
+class DatasetListSerializerView(ModelSerializer):
+    #rows = DatasetRowSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Dataset
+        fields = (
+            'name',
+        )
 class DatasetSerializerView(ModelSerializer):
     rows = DatasetRowSerializer(many=True, read_only=True)
 
@@ -41,9 +49,7 @@ class DatasetSerializerView(ModelSerializer):
         fields = (
             'name',
             'rows'
-
         )
-
 
 class UserSerializer(ModelSerializer):
     class Meta:
