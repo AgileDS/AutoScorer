@@ -61,6 +61,7 @@ class TimeSeriesPlot extends React.Component {
                         <Resizable>
                             <ChartContainer
                                 timeRange={this.props.timerange}
+                                format={"year"}
                                 trackerPosition={this.props.tracker}
                                 onTrackerChanged={this.props.handleTrackerChanged}
                                 enablePanZoom={false}
@@ -90,6 +91,9 @@ class TimeSeriesPlot extends React.Component {
                                             text={i => {
                                                 return this.props.getText?this.props.getText(i):''
                                             }}
+                                            textStyle={i => {
+                                                return this.props.getTextStyle?this.props.getTextStyle(i):{}
+                                            }}
                                             allowSelectionClear
                                             onTimeRangeChanged={this.props.handleSelectionChange}
                                             onTimeRangeClicked={this.props.onTimeRangeClicked}
@@ -99,7 +103,7 @@ class TimeSeriesPlot extends React.Component {
                                         id="traffic"
                                         label="Traffic (bps)"
                                         labelOffset={0}
-                                        min={-this.props.maxSignal}
+                                        min={this.props.minSignal}
                                         max={this.props.maxSignal}
                                         absolute={true}
                                         width="60"
