@@ -288,6 +288,7 @@ export default class MultiBrush extends React.Component {
         const userStyle = this.props.style ? this.props.style(idx) : {};
         const brushStyle = merge(true, brushDefaultStyle, userStyle);
         const userText = this.props.text ? this.props.text(idx):''
+        const userTextStyle = this.props.textStyle ? this.props.textStyle(idx):{}
         if (!this.viewport().disjoint(timeRange)) {
             const range = timeRange.intersection(this.viewport());
             const begin = range.begin();
@@ -311,7 +312,7 @@ export default class MultiBrush extends React.Component {
                 ><rect
                     {...bounds}                    
                     style={brushStyle}                   
-            /><text x={bounds.x+bounds.width/2} y={bounds.y+bounds.height/2}>{userText}</text></g>
+            /><text {...userTextStyle} x={bounds.x+bounds.width/2-24} y={bounds.y+bounds.height/2+24}>{userText}</text></g>
             );
         }
         return <g />;

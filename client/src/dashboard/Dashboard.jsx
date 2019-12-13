@@ -11,6 +11,7 @@ const visibleNumPeriods = 3
 const selectedAt = 1
 const secondsInPeriod = 10
 const labels_dict = {0 : 'W', 1 : 'NR', 2 : 'R'};
+const labelsInput = {'w' : 'W', 'e' : 'NR', 'r' : 'R','W' : 'W', 'E' : 'NR', 'R' : 'R'};
 
 async function predict(model, array) {
     function array_to_tensor(array) {
@@ -80,6 +81,13 @@ class Dashboard extends React.Component {
             return this.state.prediction
         }
     }
+    getTextStyle = (i)=>{
+        if (this.state.qualifications[i+this.state.offsetData]!=null){
+            return {'fill':'#0057c2', 'fontSize': 48}
+        } else if(i===this.state.selected) {
+            return {'fill':'#bf9300','fontSize': 48 }
+        }
+    }
     handleTrackerChanged = (t, scale) => {
         this.setState({
             tracker: t,
@@ -104,8 +112,10 @@ class Dashboard extends React.Component {
         this.setState({ selection: null, prediction: null })
     }
     onTimeRangeClicked = (i)=>{
-        this.setState({ selected: i%visibleNumPeriods })
-        console.log(i,i%visibleNumPeriods)
+        let newSelected = i%visibleNumPeriods
+        this.getPrediction(this.state.offsetData+newSelected).then((pred)=>{
+            this.setState({ selected: newSelected, prediction: pred })
+        })
     }
     getPrediction = (i, model=null)=>{
         // i == offsetData+selected
@@ -153,16 +163,15 @@ class Dashboard extends React.Component {
         let offset = this.state.offsetData
         let eventKey = event.key
         let qualifications =  this.state.qualifications
-        if (['a','w','q','A','W','Q'].indexOf(eventKey) !== -1){
-            qualifications={...qualifications,[offset+selected]:event.key}
+        if (Object.keys(labelsInput).indexOf(eventKey) !== -1){
+            qualifications={...qualifications,[offset+selected]:labelsInput[event.key]}
             eventKey='ArrowRight'
-        }
+        }else if(eventKey==' '){
+            qualifications={...qualifications,[offset+selected]:this.state.prediction}
+            eventKey='ArrowRight'
+        }        
         //https://keycode.info/        
         switch(eventKey){
-            case ' ':
-                console.log('hey')
-                // this.setState({timerange:breakTimeRange(beginTime, endTime, initialPeriod*secondsInRecord*100)})
-                break;
             case 'PageUp':
                 offset = offset+visibleNumPeriods
                 break;
@@ -254,13 +263,13 @@ class Dashboard extends React.Component {
             <div>
                 { this.state.EEG ? <TimeSeriesPlot 
                     data={this.state.EEG}
-                    tracker={this.state.tracker} 
+                    //tracker={this.state.tracker} 
                     timerange={this.state.timerange} 
                     selected={this.state.selected} 
                     selections={this.state.selections}
-                    trackerEventIn={this.state.trackerEventIn_EEG}
+                    /*trackerEventIn={this.state.trackerEventIn_EEG}
                     trackerEventOut={this.state.trackerEventIn_EEG}
-                    trackerX={this.state.trackerX}
+                    trackerX={this.state.trackerX}*/
                     handleTrackerChanged={this.handleTrackerChanged}
                     handleTimeRangeChange={this.handleTimeRangeChange}
                     handleSelectionChange={this.handleSelectionChange}
@@ -269,16 +278,17 @@ class Dashboard extends React.Component {
                     maxSignal={800}
                     minSignal={-800}
                     getText={this.getText}
+                    getTextStyle={this.getTextStyle}
                 />:null }
                 {this.state.EMG ?<TimeSeriesPlot 
                     data={this.state.EMG}
-                    tracker={this.state.tracker} 
+                    //tracker={this.state.tracker} 
                     timerange={this.state.timerange} 
                     selected={this.state.selected} 
                     selections={this.state.selections}
-                    trackerEventIn={this.state.trackerEventIn_EMG}
+                    /*trackerEventIn={this.state.trackerEventIn_EMG}
                     trackerEventOut={this.state.trackerEventOut_EMG}
-                    trackerX={this.state.trackerX}
+                    trackerX={this.state.trackerX}*/
                     handleTrackerChanged={this.handleTrackerChanged}
                     handleTimeRangeChange={this.handleTimeRangeChange}
                     handleSelectionChange={this.handleSelectionChange}
@@ -287,6 +297,7 @@ class Dashboard extends React.Component {
                     maxSignal={6000}
                     minSignal={-6000}
                     getText={this.getText}
+                    getTextStyle={this.getTextStyle}
                 />:null}
             </div>
         )

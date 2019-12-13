@@ -28,7 +28,7 @@ class App extends React.Component {
               <Login/>
             </Route>  
             <Route path="/dashboard">
-              <UploadForm handleData={(data)=>{this.setState({edf:data})}}/>
+              {!this.state.edf?<UploadForm handleData={(data)=>{this.setState({edf:data})}}/>:null}
               <Dashboard edf={this.state.edf} />
             </Route>
             <Route path="/register">

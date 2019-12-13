@@ -5,7 +5,6 @@ class UploadForm extends React.Component {
     return(
     <div>
       <input type="file" onChange={this.setFile.bind(this)} accept='.edf'/>
-      <input type="button" onClick={this.postFile} value="Upload" />
     </div>
     )
   }
