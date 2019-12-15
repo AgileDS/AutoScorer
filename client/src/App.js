@@ -14,7 +14,8 @@ import UploadForm from './dashboard/UploadForm';
 
 class App extends React.Component {
   state={
-    edf:null
+    edf:null,
+    name:null
   }
   render(){
     return (
@@ -26,10 +27,15 @@ class App extends React.Component {
             </Route>
             <Route path="/login">
               <Login/>
-            </Route>  
+            </Route>
             <Route path="/dashboard">
-              {!this.state.edf?<UploadForm handleData={(data)=>{this.setState({edf:data})}}/>:null}
-              <Dashboard edf={this.state.edf} />
+              {!this.state.edf ? <UploadForm handleData={(data, filename) => {
+                  this.setState({
+                      edf:data,
+                      name:filename})
+                }}/> : null
+              }
+              <Dashboard edf={this.state.edf} name={this.state.name}/>
             </Route>
             <Route path="/register">
                 <Register/>
