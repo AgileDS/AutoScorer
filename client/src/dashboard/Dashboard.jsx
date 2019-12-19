@@ -5,7 +5,7 @@ import _ from 'lodash'
 import { TimeSeries, TimeRange } from "pondjs";
 import {getQualifications, listQualifications, sendQualificationsReq} from "../api";
 import * as tf from '@tensorflow/tfjs'
-import {Row, Button, Spinner, OverlayTrigger, Popover} from "react-bootstrap";
+import {Row, Button, Spinner, OverlayTrigger, Popover, Navbar} from "react-bootstrap";
 /**
  * DATA
  */
@@ -290,6 +290,44 @@ class Dashboard extends React.Component {
         }
         event.target.blur();
     }
+    dict_to_csv = (dict) => {
+        let result = ''
+        for (const [key, value] of Object.entries(dict)) {
+            result += key + ',' + value + '\n';
+        }
+        return result
+    }
+    csv_to_dict = (csv) => {
+        let result = {}
+        csv.split("\n").forEach((row) => {
+            let element = row.split(",");
+            result[parseInt(element[0])] = element[1];
+        })
+        return result
+    }
+    download_selections = (event) => {
+        var data = new Blob([this.dict_to_csv(this.state.qualifications)], {type: 'text/csv'});
+        var csvURL = window.URL.createObjectURL(data);
+        let tempLink = document.createElement('a');
+        tempLink.href = csvURL;
+        tempLink.setAttribute('download', this.props.name + '-selections.csv');
+        tempLink.click();
+    }
+    upload_selections = (event) => {
+        let file = event.target.files[0]
+        console.log("madona", file);
+        let qualifications = {}
+        let reader = new FileReader();
+        reader.onload = () => {
+            qualifications = this.csv_to_dict(reader.result);
+            this.setState({
+                qualifications: qualifications
+            });
+
+        };
+        // start reading the file. When it is done, calls the onload event defined above.
+        reader.readAsBinaryString(file);
+    }
     componentDidMount(){
         document.addEventListener("keydown", _.debounce(this._handleKeyDown,50));
     }
@@ -322,10 +360,17 @@ class Dashboard extends React.Component {
         }
         return (
             <div>
-                <Row align='center' className="mt-md-1 mr-1">
-                    <div className="col-8 d-inline-flex justify-content-md-end align-items-center">
-                        <Button className='mr-md-5 No-focus' onClick={this.load_selections}>Load selections</Button>
-                        <Button className='ml-md-5 No-focus' onClick={this.send_selections}>Save selections</Button>
+                {/*<Row align='center' className="mt-md-1 mr-1">*/}
+                <Navbar bg="lite">
+                    <div className='col-2'>
+                        <Navbar.Brand>AutoScorer</Navbar.Brand>
+                    </div>
+                    <div className="col-3 d-inline-flex justify-content-center align-items-center">
+                        <Button variant="outline-secondary" className='No-focus' onClick={this.download_selections}>Download</Button>
+                        <label className="btn btn-outline-secondary ml-md-5 No-focus" style={{'marginBottom': '0px'}} onChange={this.upload_selections.bind(this)} >
+                            Upload <input type="file" accept='.csv' hidden/>
+                        </label>
+                        {/*<input type='file' className='btn btn-outline-secondary ml-md-5 No-focus' hidden onChange={this.upload_selections} accept='.csv'/>*/}
                     </div>
                     <div className="col-1 d-inline-flex align-items-center">
                         { this.state.showAlert === true ?
@@ -336,15 +381,19 @@ class Dashboard extends React.Component {
                                     <Spinner animation="border" variant="secondary"  /> : null
                         }
                     </div>
-                    <div className="col-3" align='right' >
+                    <div className="col-5 d-inline-flex justify-content-center align-items-center">
+                        <Button variant='outline-primary' className=' No-focus' onClick={this.load_selections}>Load selections</Button>
+                        <Button variant='outline-primary' className=' ml-md-5 No-focus' onClick={this.send_selections}>Save selections</Button>
+                    </div>
+                    <div className="col-1" align='right' >
                         <OverlayTrigger trigger="click" placement="left" overlay={helpPopover}>
-                        <a tabindex="0"  className='btn btn-light ml-md-5 No-focus float-right'>
+                        <a  className='btn btn-light No-focus float-right'>
                             Help
                         </a>
 
                         </OverlayTrigger>
                     </div>
-                </Row>
+                </Navbar>
                 { this.state.EEG ? <TimeSeriesPlot
                     data={this.state.EEG}
                     //tracker={this.state.tracker}
@@ -364,7 +413,7 @@ class Dashboard extends React.Component {
                     getText={this.getText}
                     getTextStyle={this.getTextStyle}
                 />:
-                <div align="center" style={{'minWidth': '100%'}} className="mt-md-5">
+                <div align="center" style={{'minWidth': '100%', 'minHeight':'100%'}} className="mt-md-5">
                     <Spinner  align="center" style={{'minWidth': '10em', 'minHeight':'10em'}}  animation="grow" variant="secondary"  />
                 </div>  }
                 {this.state.EMG ?<TimeSeriesPlot
